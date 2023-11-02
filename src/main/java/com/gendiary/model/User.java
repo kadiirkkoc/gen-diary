@@ -34,6 +34,9 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl; // profile photo
+
     @Column(name = "username")
     private String username;
 
@@ -57,15 +60,16 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @JsonIgnore
+    @Column(name = "shared_post_uuids")
+    private String sharedPostUUIDS;
+
+    @Column(name = "liked_comments")
+    private String likedComments;
+
+    @Column(name = "liked_posts")
+    private String likedPosts;
+
     @OneToMany(mappedBy = "user")
-    private List<Post> sharedPosts;
+    private List<Post> posts;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "likeList")
-    private List<Comment> likedComments = new ArrayList<>();
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "likeList")
-    private List<Post> likedPosts = new ArrayList<>();
 }

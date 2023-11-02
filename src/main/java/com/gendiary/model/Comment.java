@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,11 +27,14 @@ public class Comment {
     @Column(name = "uuid",unique = true)
     private String uuid;
 
-    @Column(name = "text")
-    private String text;
+    @Column(name = "commenter_uuid")
+    private String commenterUUID;
+
+    @Column(name = "comment_content",columnDefinition = "TEXT")
+    private String commentContent;
 
     @Column(name = "published_date")
-    private Date publishedDate;
+    private Timestamp publishedDate;
 
     @Column(name = "like_count")
     private Long countOfLike;
@@ -47,5 +51,5 @@ public class Comment {
             joinColumns = @JoinColumn(name = "comment_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> likeList = new ArrayList<>();
+    private List<User> likeList;
 }
