@@ -1,0 +1,18 @@
+server:
+  port: 8081
+
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gen_diary
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: 12345 #your postgresql password here.
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: update
+  main:
+    allow-circular-references: true
