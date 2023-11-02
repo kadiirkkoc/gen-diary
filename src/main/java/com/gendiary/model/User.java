@@ -57,9 +57,6 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "re_password")
-    private String rePassword;
-
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Post> sharedPosts;
