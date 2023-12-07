@@ -1,11 +1,12 @@
 package com.gendiary.service;
 
 import com.gendiary.dtos.UserDto;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     List<UserDto> getAllUser();
     UserDto getUserById(Long Id);

@@ -7,6 +7,8 @@ import com.gendiary.model.User;
 import com.gendiary.repository.UserRepository;
 import com.gendiary.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -98,5 +100,10 @@ public class UserServiceImpl implements UserService {
     public String deleteUser(Long id) {
         userRepository.deleteById(id);
         return UserMessage.DELETE + id;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
 }
