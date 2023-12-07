@@ -1,6 +1,7 @@
 package com.gendiary.security;
 
 import com.gendiary.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -35,9 +36,9 @@ public class SecurityConfiguration  {
         return provider;
     }
 
-    @Bean
-    public void configure(AuthenticationManagerBuilder provider){
-        provider.authenticationProvider(authenticationProvider());
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
     }
 
     @Bean

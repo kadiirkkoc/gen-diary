@@ -21,6 +21,7 @@ public class UserDto {
     private String gender;
     private Date birthDate;
     private Date joinDate;
+    private String password;
 
 
 }
