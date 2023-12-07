@@ -7,7 +7,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/gen_diary
     driverClassName: org.postgresql.Driver
     username: postgres
-    password: password
+    password: Kkoc0312
   jpa:
     properties:
       hibernate:

@@ -9,11 +9,13 @@ import com.gendiary.repository.CommentRepository;
 import com.gendiary.repository.PostRepository;
 import com.gendiary.service.CommentService;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -83,6 +85,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public String deleteComment(Long id) {
-        return null;
+        commentRepository.deleteById(id);
+        return CommentMessage.DELETE + id;
     }
 }

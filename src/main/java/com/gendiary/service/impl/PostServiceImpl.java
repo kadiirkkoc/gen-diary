@@ -3,6 +3,7 @@ package com.gendiary.service.impl;
 import com.gendiary.dtos.PostDto;
 import com.gendiary.loggers.MainLogger;
 import com.gendiary.loggers.messages.PostMessage;
+import com.gendiary.loggers.messages.UserMessage;
 import com.gendiary.model.Post;
 import com.gendiary.model.User;
 import com.gendiary.repository.PostRepository;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PostServiceImpl implements com.gendiary.service.PostService {
 
@@ -27,12 +29,38 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
     @Override
     public List<PostDto> getAllPost() {
-        return null;
+        return postRepository.findAll().stream()
+                .map(post -> PostDto.builder()
+                        .content(post.getContent())
+                        .renderedImageUrl(post.getRenderedImageUrl())
+                        .likeCount(post.getLikeCount())
+                        .commentCount(post.getCommentCount())
+                        .dateCreated(post.getDateCreated())
+                        .postOwnerUUID(post.getUser().getUuid())
+                        .postComments(post.getPostComments())
+                        .postTags(post.getPostTags())
+                        .build()).collect(Collectors.toList());
+
     }
 
     @Override
     public PostDto getPostById(Long postId) {
-        return null;
+        Optional<Post> post = postRepository.findById(postId);
+        return post.map(x -> PostDto.builder()
+                    .content(x.getContent())
+                    .renderedImageUrl(x.getRenderedImageUrl())
+                    .likeCount(x.getLikeCount())
+                    .commentCount(x.getCommentCount())
+                    .dateCreated(x.getDateCreated())
+                    .postOwnerUUID(x.getUser().getUuid())
+                    .postComments(x.getPostComments())
+                    .postTags(x.getPostTags())
+                    .build())
+                .orElseGet(() -> {
+                    logger.log(PostMessage.NOT_FOUND + postId, HttpStatus.BAD_REQUEST);
+                    return null;
+                });
+
     }
 
     @Override
@@ -61,11 +89,20 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
     @Override
     public String updatePost(Long id,PostDto postDto) {
-        return null;
+        Optional<Post> post = postRepository.findById(id);
+        if (post.isEmpty()){
+            logger.log(PostMessage.NOT_FOUND_WITH_UUID + id, HttpStatus.BAD_REQUEST);
+        }
+        post.get().setContent(postDto.getContent());
+        post.get().setLikeCount(postDto.getLikeCount());
+        post.get().setCommentCount(postDto.getCommentCount());
+        postRepository.save(post.get());
+        return PostMessage.UPDATE + post.get().getId();
     }
 
     @Override
     public String deletePost(Long id) {
-        return null;
+        postRepository.deleteById(id);
+        return PostMessage.DELETE + id;
     }
 }
