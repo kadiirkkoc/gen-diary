@@ -46,7 +46,7 @@ public class User {
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "user_role")
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @Column(name = "birth_date")

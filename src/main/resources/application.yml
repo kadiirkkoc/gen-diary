@@ -7,7 +7,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/gen_diary
     driverClassName: org.postgresql.Driver
     username: postgres
-    password: 12345 #your postgresql password here.
+    password: password
   jpa:
     properties:
       hibernate:

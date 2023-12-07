@@ -42,7 +42,7 @@ public class Post {
     private Integer commentCount;
 
     @Column(name = "likers")
-    private String likerUUIDS;
+    private String likers;
 
     @Column(name = "dateCreated")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
