@@ -30,10 +30,10 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserById(id),HttpStatus.OK);
     }
 
-    @PostMapping
+  /*  @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.createUser(userDto),HttpStatus.OK);
-    }
+    }*/
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDto userDto){

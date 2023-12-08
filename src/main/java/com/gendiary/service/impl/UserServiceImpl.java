@@ -1,17 +1,19 @@
 package com.gendiary.service.impl;
 
+import com.gendiary.beans.AuthenticationResponse;
+import com.gendiary.dtos.AuthenticationRequest;
 import com.gendiary.dtos.UserDto;
 import com.gendiary.enums.UserRole;
 import com.gendiary.loggers.MainLogger;
 import com.gendiary.loggers.messages.UserMessage;
 import com.gendiary.model.User;
 import com.gendiary.repository.UserRepository;
+import com.gendiary.security.JwtService;
 import com.gendiary.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +25,16 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     private final MainLogger logger = new MainLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -66,8 +72,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String createUser(UserDto userDto) {
-       User dbUser = User.builder()
+    public AuthenticationResponse createUser(UserDto userDto) {
+       var dbUser = User.builder()
                .firstName(userDto.getFirstName())
                .lastName(userDto.getLastName())
                .avatarUrl(userDto.getAvatarUrl())
@@ -78,9 +84,26 @@ public class UserServiceImpl implements UserService {
                .joinDate(userDto.getJoinDate())
                .password(passwordEncoder.encode(userDto.getPassword()))
                .uuid(UUID.randomUUID().toString())
+               .role(UserRole.USER)
                .build();
        userRepository.save(dbUser);
-       return UserMessage.CREATE+dbUser.getId();
+       String token = jwtService.generateToken(dbUser);
+       return AuthenticationResponse.builder()
+               .token(token)
+               .build();
+    }
+
+    @Override
+    public AuthenticationResponse authenticate(AuthenticationRequest request){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword())
+        );
+        var user = userRepository.findByEmail(request.getEmail());
+
+        String token = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(token)
+                .build();
     }
 
     @Override
@@ -107,16 +130,5 @@ public class UserServiceImpl implements UserService {
         return UserMessage.DELETE + id;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username); // username is email
-        if(user == null)
-            logger.log("Invalid username or password",HttpStatus.BAD_REQUEST);
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                user.getPassword(),mapRolesToAuthorities(Collections.singleton(user.getRole())));
-    }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<UserRole> roles){
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toList());
-    }
 }
