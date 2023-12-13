@@ -50,6 +50,9 @@ public class User implements UserDetails {
     @Column(name = "gender")
     private String gender;
 
+    @Column(name = "country")
+    private String country;
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -75,6 +78,25 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
+
+    @Column(name = "follower_count")
+    private Integer followerCount;
+
+    @Column(name = "following_count")
+    private Integer followingCount;
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "follow_users",
+            joinColumns = @JoinColumn(name = "followed_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private List<User> followerUsers = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "followerUsers")
+    private List<User> followingUsers = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

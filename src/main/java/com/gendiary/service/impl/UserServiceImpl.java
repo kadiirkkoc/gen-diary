@@ -13,7 +13,7 @@ import com.gendiary.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +38,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getDbUserById(Long userId) {
+        return userRepository.findById(userId).orElseGet(logger.log(UserMessage.NOT_FOUND + userId));
+    }
+
+    @Override
     public List<UserDto> getAllUser() {
         return userRepository.findAll().stream()
                 .map(user -> UserDto.builder()
@@ -47,6 +52,7 @@ public class UserServiceImpl implements UserService {
                         .username(user.getUsername())
                         .email(user.getEmail())
                         .gender(user.getGender())
+                        .country(user.getCountry())
                         .birthDate(user.getBirthDate())
                         .joinDate(user.getJoinDate())
                         .build()).collect(Collectors.toList());
@@ -62,6 +68,7 @@ public class UserServiceImpl implements UserService {
                         .username(x.getUsername())
                         .email(x.getEmail())
                         .gender(x.getGender())
+                        .country(x.getCountry())
                         .birthDate(x.getBirthDate())
                         .joinDate(x.getJoinDate())
                         .build())
@@ -80,6 +87,7 @@ public class UserServiceImpl implements UserService {
                .username(userDto.getUsername())
                .email(userDto.getEmail())
                .gender(userDto.getGender())
+               .country(userDto.getCountry())
                .birthDate(userDto.getBirthDate())
                .joinDate(userDto.getJoinDate())
                .password(passwordEncoder.encode(userDto.getPassword()))
@@ -118,6 +126,7 @@ public class UserServiceImpl implements UserService {
         user.get().setUsername(userDto.getUsername());
         user.get().setEmail(userDto.getEmail());
         user.get().setGender(userDto.getGender());
+        user.get().setCountry(userDto.getCountry());
         user.get().setBirthDate(userDto.getBirthDate());
         user.get().setJoinDate(userDto.getJoinDate());
         userRepository.save(user.get());
@@ -130,5 +139,44 @@ public class UserServiceImpl implements UserService {
         return UserMessage.DELETE + id;
     }
 
+    public final User getAuthenticatedUser() {
+        String authUserEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return getUserByEmail(authUserEmail);
+    }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public void followUser(Long id) {
+        User authUser = getAuthenticatedUser();
+        if (!authUser.getId().equals(id)) {
+            Optional<User> userToFollow = userRepository.findById(id);
+            authUser.getFollowingUsers().add(userToFollow.get());
+            authUser.setFollowingCount(authUser.getFollowingCount() + 1);
+            userToFollow.get().getFollowerUsers().add(authUser);
+            userToFollow.get().setFollowerCount(userToFollow.get().getFollowerCount() + 1);
+            userRepository.save(userToFollow.get());
+            userRepository.save(authUser);
+        } else {
+            logger.log(UserMessage.NOT_FOUND + id,HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public void unfollowUser(Long id) {
+        User authUser = getAuthenticatedUser();
+        if (!authUser.getId().equals(id)) {
+            Optional<User> userToUnfollow = userRepository.findById(id);
+            authUser.getFollowingUsers().remove(userToUnfollow);
+            authUser.setFollowingCount(authUser.getFollowingCount() - 1);
+            userToUnfollow.get().getFollowerUsers().remove(authUser);
+            userToUnfollow.get().setFollowerCount(userToUnfollow.get().getFollowerCount() - 1);
+            userRepository.save(userToUnfollow.get());
+            userRepository.save(authUser);
+        } else {
+            logger.log(UserMessage.NOT_FOUND + id,HttpStatus.BAD_REQUEST);
+        }
+    }
 }
