@@ -6,4 +6,5 @@ public class UserMessage {
     public static final String UPDATE = "User updated with this ID: ";
     public static final String DELETE = "User has been deleted with this ID: ";
     public static final String NOT_FOUND_WITH_UUID = "There is no user present with this UUID: ";
+    public static final String INVALID_OPERATION = "Invalid operation. ";
 }
