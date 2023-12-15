@@ -34,6 +34,9 @@ public class Comment {
     @Column(name = "published_date")
     private Timestamp publishedDate;
 
+    @Column(name = "last_modified_date")
+    private Timestamp dateLastModified;
+
     @Column(name = "like_count")
     private Long countOfLike;
 
