@@ -20,4 +20,5 @@ public interface UserService {
     AuthenticationResponse authenticate(AuthenticationRequest request);
     void followUser(Long Id);
     void unfollowUser(Long Id);
+    User getAuthenticatedUser();
 }
