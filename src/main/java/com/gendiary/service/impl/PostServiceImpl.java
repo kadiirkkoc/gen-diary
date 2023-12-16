@@ -88,7 +88,7 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
             postRepository.save(Post.builder()
                     .uuid(UUID.randomUUID().toString())
                     .content(postDto.getContent())
-                    .uploadedImageUrl(postDto.getUploadedImageUrl())
+                    .uploadedImageUrl(uploadImage(postDto.getUploadedImageUrl()))
                     .renderedImageUrl(getRenderedImage(aiServiceProcessUrl))
                     .likeCount(0)
                     .commentCount(0)
@@ -126,12 +126,11 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
         URL url = new URL(imgUrl);
 
         try (InputStream in = url.openStream()) {
-            byte[] imageData = IOUtils.toByteArray(in); // You can use a library like Apache Commons IO for this
+            byte[] imageData = IOUtils.toByteArray(in);
             String encodedImage = Base64.getEncoder().encodeToString(imageData);
             String processedResult = restTemplate.postForObject(aiServiceProcessUrl, encodedImage, String.class);
             return processedResult;
         } catch (IOException e) {
-            // Handle errors, e.g., invalid URL, network issues, or AI service request failures
             e.printStackTrace();
             return null;
         }
@@ -139,7 +138,6 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
     public String getRenderedImage(String aiServiceImgUrl) throws IOException {
         if (StringUtils.isEmpty(aiServiceImgUrl)) {
-            // Handle invalid input, e.g., return an error response or throw an exception
             throw new IllegalArgumentException("aiServiceImgUrl is empty or null");
         }
 
@@ -148,10 +146,8 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
             String decodedImagePath = saveDecodedImageToFile(decodedImage);
             return decodedImagePath;
         } catch (IllegalArgumentException e) {
-            // Handle invalid Base64 data, e.g., return an error response or throw an exception
             throw new IllegalArgumentException("Invalid Base64 data", e);
         } catch (IOException e) {
-            // Handle file I/O errors
             e.printStackTrace();
             throw e;
         }
