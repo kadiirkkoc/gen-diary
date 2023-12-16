@@ -1,7 +1,6 @@
 ai-service:
   process-url: "http://your-ai-service-url/processImage"
 
-
 server:
   port: 8081
 
