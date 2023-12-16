@@ -1,9 +1,12 @@
 package com.gendiary.loggers;
 
 import com.gendiary.exception.GenDiaryServerException;
+import com.gendiary.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+
+import java.util.function.Supplier;
 
 public class MainLogger {
 
@@ -13,8 +16,9 @@ public class MainLogger {
         this.logger= LogManager.getLogger(tClass);
     }
 
-    public void log(String message){
+    public Supplier<? extends User> log(String message){
         logger.info(message);
+        return null;
     }
 
     public void log(String message, HttpStatus httpStatus){
