@@ -30,10 +30,10 @@ public class Post {
     private String content;
 
     @Column(name = "uploaded_image_url")
-    private String uploadedImage;
+    private String uploadedImageUrl;
 
     @Column(name = "rendered_image_url")
-    private String renderedImage;
+    private String renderedImageUrl;
 
     @Column(name = "like_count")
     private Integer likeCount;
