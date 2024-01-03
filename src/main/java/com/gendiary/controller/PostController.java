@@ -21,22 +21,22 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> getAllComments(){
+    public ResponseEntity<List<PostDto>> getAllPosts(){
         return new ResponseEntity<>(postService.getAllPost(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getCommentWithId(@PathVariable(name = "id")Long id){
+    public ResponseEntity<PostDto> getPostWithId(@PathVariable(name = "id")Long id){
         return new ResponseEntity<>(postService.getPostById(id),HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<String> createComment(@RequestBody PostDto postDto) throws IOException {
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<String> createPost(@ModelAttribute PostDto postDto) throws IOException {
         return new ResponseEntity<>(postService.createPost(postDto),HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateComment(@PathVariable Long id, @RequestBody PostDto postDto){
+    public ResponseEntity<String> updatePost(@PathVariable Long id, @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.updatePost(id,postDto),HttpStatus.OK);
     }
 }

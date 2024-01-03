@@ -21,7 +21,7 @@ public class MainLogger {
         return null;
     }
 
-    public void log(String message, HttpStatus httpStatus){
+    public String log(String message, HttpStatus httpStatus){
         logger.error(message);
         throw new GenDiaryServerException(message,httpStatus);
     }

@@ -5,7 +5,6 @@ server:
   port: 8081
 
 spring:
-
   datasource:
     url: jdbc:postgresql://localhost:5432/gen_diary
     driverClassName: org.postgresql.Driver
@@ -20,3 +19,15 @@ spring:
   main:
     allow-circular-references: true
 
+app:
+  root:
+    frontend: http://localhost:4200
+    backend: http://localhost:8080
+
+upload:
+  user:
+    images: uploads/user
+  post:
+    images: uploads/post
+  rendered:
+    images: uploads/rendered_images
