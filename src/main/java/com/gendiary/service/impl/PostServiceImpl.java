@@ -77,7 +77,7 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
         Optional<Post> post = postRepository.findById(postId);
         return post.map(x -> PostDto.builder()
                         .content(x.getContent())
-                        //.renderedImage(x.getRenderedImage())
+                        .renderedImage(x.getRenderedImageUrl()  )
                         .likeCount(x.getLikeCount())
                         .commentCount(x.getCommentCount())
                         .dateCreated(x.getDateCreated())
@@ -103,9 +103,9 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
         if (postDto.getUploadedImage() != null) {
             String processedImageUrl = processImageWithAIService(postDto.getUploadedImage());
-            newPost.setRenderedImage(processedImageUrl);
+            newPost.setRenderedImageUrl(processedImageUrl);
         } else {
-            newPost.setRenderedImage(null);
+            newPost.setRenderedImageUrl(null);
         }
 
         newPost.setDateCreated(new Timestamp(System.currentTimeMillis()));
