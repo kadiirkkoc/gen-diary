@@ -30,10 +30,10 @@ public class Post {
     private String content;
 
     @Column(name = "uploaded_image_url")
-    private String uploadedImageUrl;
+    private String uploadedImage;
 
     @Column(name = "rendered_image_url")
-    private String renderedImageUrl;
+    private String renderedImage;
 
     @Column(name = "like_count")
     private Integer likeCount;
@@ -43,6 +43,9 @@ public class Post {
 
     @Column(name = "likers")
     private String likers;
+
+    @Column(name = "postOwnerUuid")
+    private String postOwnerUuid;
 
     @Column(name = "dateCreated")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

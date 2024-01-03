@@ -3,6 +3,7 @@ package com.gendiary.dtos;
 import com.gendiary.model.Comment;
 import com.gendiary.model.Tag;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -14,8 +15,8 @@ import java.util.List;
 public class PostDto {
 
     private String content;
-    private String uploadedImageUrl;
-    private String renderedImageUrl;
+    private MultipartFile uploadedImage;
+    private MultipartFile renderedImage;
     private Integer likeCount;
     private Integer commentCount;
     private String likerUUIDS;

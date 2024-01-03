@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "uuid",unique = true)
+    @Column(name = "uuid", unique = true)
     private String uuid;
 
     @Column(name = "first_name")
@@ -92,10 +92,12 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "followed_id"),
             inverseJoinColumns = @JoinColumn(name = "follower_id")
     )
+    @Builder.Default
     private List<User> followerUsers = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "followerUsers")
+    @Builder.Default
     private List<User> followingUsers = new ArrayList<>();
 
     @Override
@@ -104,7 +106,7 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return email;
     }
 
