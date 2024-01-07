@@ -6,7 +6,6 @@ import com.gendiary.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class PostController {
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<String> createPost(@ModelAttribute PostDto postDto) throws IOException {
+    public ResponseEntity<String> createPost(@ModelAttribute PostDto postDto ) throws IOException {
         return new ResponseEntity<>(postService.createPost(postDto),HttpStatus.OK);
     }
 

@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.List;
+
 public interface UserService {
 
     User getDbUserById(Long userId);
@@ -18,7 +20,9 @@ public interface UserService {
     String updateUser(Long id,UserDto userDto);
     String deleteUser(Long id);
     AuthenticationResponse authenticate(AuthenticationRequest request);
-    void followUser(Long Id);
-    void unfollowUser(Long Id);
-    User getAuthenticatedUser();
+    //void followUser(Long Id);
+    //void unfollowUser(Long Id);
+    //void followUser(Long Id);
+    //void unfollowUser(Long Id);
+    User getAuthenticatedUser(String authUserEmail);
 }

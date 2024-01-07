@@ -99,36 +99,37 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findByUuid(String.valueOf(uuid));
     }
 
-    @Override
-    public Comment likeComment(Long uuid) {
-        User authUser = userService.getAuthenticatedUser();
-        Comment targetComment = getCommentByUuid(uuid);
-        if (!targetComment.getLikeList().contains(authUser)) {
-            targetComment.setCountOfLike(targetComment.getCountOfLike()+1);
-            targetComment.getLikeList().add(authUser);
-            targetComment.setDateLastModified((Timestamp) new Date());
-            Comment updatedComment = commentRepository.save(targetComment);
-            return updatedComment;
-        } else {
-            logger.log(CommentMessage.INVALID_OPERATION + uuid,HttpStatus.BAD_REQUEST);
-            return null;
-        }
-    }
 
-    @Override
-    public Comment unlikeComment(Long uuid) {
-        User authUser = userService.getAuthenticatedUser();
-        Comment targetComment = getCommentByUuid(uuid);
-        if (targetComment.getLikeList().contains(authUser)) {
-            targetComment.setCountOfLike(targetComment.getCountOfLike()-1);
-            targetComment.getLikeList().remove(authUser);
-            targetComment.setDateLastModified((Timestamp) new Date());
-            Comment updatedComment = commentRepository.save(targetComment);
-
-            return updatedComment;
-        } else {
-            logger.log(CommentMessage.INVALID_OPERATION + uuid,HttpStatus.BAD_REQUEST);
-            return null;
-        }
-    }
+//    @Override
+//    public Comment likeComment(Long uuid) {
+//        User authUser = userService.getAuthenticatedUser(postDto.getAuthUserEmail());
+//        Comment targetComment = getCommentByUuid(uuid);
+//        if (!targetComment.getLikeList().contains(authUser)) {
+//            targetComment.setCountOfLike(targetComment.getCountOfLike()+1);
+//            targetComment.getLikeList().add(authUser);
+//            targetComment.setDateLastModified((Timestamp) new Date());
+//            Comment updatedComment = commentRepository.save(targetComment);
+//            return updatedComment;
+//        } else {
+//            logger.log(CommentMessage.INVALID_OPERATION + uuid,HttpStatus.BAD_REQUEST);
+//            return null;
+//        }
+//    }
+//
+//    @Override
+//    public Comment unlikeComment(Long uuid) {
+//        User authUser = userService.getAuthenticatedUser(postDto.getAuthUserEmail());
+//        Comment targetComment = getCommentByUuid(uuid);
+//        if (targetComment.getLikeList().contains(authUser)) {
+//            targetComment.setCountOfLike(targetComment.getCountOfLike()-1);
+//            targetComment.getLikeList().remove(authUser);
+//            targetComment.setDateLastModified((Timestamp) new Date());
+//            Comment updatedComment = commentRepository.save(targetComment);
+//
+//            return updatedComment;
+//        } else {
+//            logger.log(CommentMessage.INVALID_OPERATION + uuid,HttpStatus.BAD_REQUEST);
+//            return null;
+//        }
+//    }
 }

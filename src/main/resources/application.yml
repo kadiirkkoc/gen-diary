@@ -1,8 +1,8 @@
 ai-service:
-  process-url: "http://your-ai-service-url/processImage"
+  process-url: "https://1f8c-31-223-46-249.ngrok-free.app/process_image"
 
 server:
-  port: 8081
+  port: 8082
 
 spring:
   datasource:
@@ -22,7 +22,7 @@ spring:
 app:
   root:
     frontend: http://localhost:4200
-    backend: http://localhost:8080
+    backend: http://localhost:8082
 
 upload:
   user:
@@ -31,3 +31,8 @@ upload:
     images: uploads/post
   rendered:
     images: uploads/rendered_images
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+

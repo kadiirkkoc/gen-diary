@@ -38,6 +38,9 @@ public class Post {
     @Column(name = "like_count")
     private Integer likeCount;
 
+    @Column(name = "country")
+    private String country;
+
     @Column(name = "comment_count")
     private Integer commentCount;
 
@@ -54,7 +57,7 @@ public class Post {
     @JsonIgnore
     @ManyToOne
     @EqualsAndHashCode.Exclude
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id" , nullable = false)
     private User user;
 
     @JsonIgnore

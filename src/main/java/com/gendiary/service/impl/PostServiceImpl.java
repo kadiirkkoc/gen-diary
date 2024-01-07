@@ -12,6 +12,7 @@ import com.gendiary.utils.FileNamingUtil;
 import com.gendiary.utils.FileUploadUtil;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -77,7 +78,7 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
         Optional<Post> post = postRepository.findById(postId);
         return post.map(x -> PostDto.builder()
                         .content(x.getContent())
-                        .renderedImage(x.getRenderedImageUrl()  )
+                        //.renderedImage(x.getRenderedImageUrl()  )
                         .likeCount(x.getLikeCount())
                         .commentCount(x.getCommentCount())
                         .dateCreated(x.getDateCreated())
@@ -94,15 +95,18 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
     @Override
     public String createPost(PostDto postDto) throws IOException {
-        User authUser = userService.getAuthenticatedUser();
+        User authUser = userService.getAuthenticatedUser(postDto.getAuthUserEmail());
+        if (authUser == null){
+            System.out.println("user null");
+        }
         Post newPost = new Post();
         newPost.setContent(postDto.getContent());
         newPost.setUser(authUser);
         newPost.setLikeCount(0);
+        newPost.setCountry(postDto.getCountry());
         newPost.setPostComments(null);
-
-        if (postDto.getUploadedImage() != null) {
-            String processedImageUrl = processImageWithAIService(postDto.getUploadedImage());
+        if (postDto.getImage() != null) {
+            String processedImageUrl = processImageWithAIService(postDto);
             newPost.setRenderedImageUrl(processedImageUrl);
         } else {
             newPost.setRenderedImageUrl(null);
@@ -110,43 +114,68 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
         newPost.setDateCreated(new Timestamp(System.currentTimeMillis()));
         postRepository.save(newPost);
+        System.out.println("mervekoç");
         return logger.log(PostMessage.CREATE + newPost.getUuid(), HttpStatus.OK);
     }
 
 
-    private String processImageWithAIService(MultipartFile uploadedImage) throws IOException {
-        byte[] imageBytes = uploadedImage.getBytes();
-        String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
-
-        HttpPost httpPost = new HttpPost(aiServiceProcessUrl);
-        String jsonPayload = "{\"image\": \"" + encodedImage + "\"}";
-        StringEntity entity = new StringEntity(jsonPayload);
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Content-Type", "application/json");
-        httpPost.setHeader("Accept", "application/json");
 
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(httpPost)) {
+        private String processImageWithAIService(PostDto postDto) throws IOException {
+            byte[] imageBytes = postDto.getImage().getBytes();
+            String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
 
-            String responseString = EntityUtils.toString(response.getEntity());
-            JsonObject jsonResponse = new JsonParser().parse(responseString).getAsJsonObject();
-            String encodedProcessedImage = jsonResponse.get("processed_image").getAsString();
-            byte[] decodedBytes = Base64.getDecoder().decode(encodedProcessedImage);
-            return saveDecodedImage(decodedBytes);
+            HttpPost httpPost = new HttpPost(aiServiceProcessUrl);
+            // Construct JSON payload
+            JsonObject jsonPayload = new JsonObject();
+            jsonPayload.addProperty("image", encodedImage);
+            jsonPayload.addProperty("country", postDto.getCountry());
+
+            StringEntity entity = new StringEntity(jsonPayload.toString(), ContentType.APPLICATION_JSON);
+            httpPost.setEntity(entity);
+            httpPost.setHeader("Accept", "application/json");
+
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                 CloseableHttpResponse response = httpClient.execute(httpPost)) {
+
+                int statusCode = response.getStatusLine().getStatusCode();
+                String responseString = EntityUtils.toString(response.getEntity());
+
+                if (statusCode != 200) {
+                    logger.error("AI service returned a non-OK status code: " + statusCode);
+                    logger.error("Error response from the AI service: " + responseString);
+                    throw new RuntimeException("AI service returned a non-OK status code: " + statusCode + " - " + responseString);
+                }
+
+                JsonObject jsonResponse = new JsonParser().parse(responseString).getAsJsonObject();
+                if (jsonResponse.has("image_data")) {
+                    String encodedProcessedImage = jsonResponse.get("image_data").getAsString();
+                    byte[] decodedBytes = Base64.getDecoder().decode(encodedProcessedImage);
+                    return saveDecodedImage(decodedBytes);
+                } else {
+                    throw new RuntimeException("The response from the AI service does not contain 'image_data'.");
+                }
+            } catch (IOException e) {
+                logger.error("An IOException occurred when processing the image with the AI service: ");
+                throw e;
+            }
         }
-    }
 
-    private String saveDecodedImage(byte[] imageBytes) throws IOException {
-        String uploadDir = environment.getProperty("upload.rendered.images");
-        String imageName = "rendered_" + UUID.randomUUID() + ".jpg";
-        String imagePath = uploadDir + File.separator + imageName;
 
-        try (OutputStream out = new FileOutputStream(imagePath)) {
-            out.write(imageBytes);
+
+        private String saveDecodedImage(byte[] imageBytes) throws IOException {
+            String uploadDir = environment.getProperty("upload.rendered.images");
+            String imageName = "rendered_" + UUID.randomUUID() + ".jpg";
+            String imagePath = uploadDir + File.separator + imageName;
+
+            File outputFile = new File(imagePath);
+            outputFile.getParentFile().mkdirs(); // Create the directory structure if it doesn't exist
+
+            try (OutputStream out = new FileOutputStream(imagePath)) {
+                out.write(imageBytes);
+            }
+            return environment.getProperty("app.root.backend") + File.separator + uploadDir + File.separator + imageName;
         }
-        return environment.getProperty("app.root.backend") + File.separator + uploadDir + File.separator + imageName;
-    }
 
     @Override
     public String updatePost(Long id, PostDto postDto) {

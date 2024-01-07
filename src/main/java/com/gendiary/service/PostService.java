@@ -1,10 +1,6 @@
 package com.gendiary.service;
 
 import com.gendiary.dtos.PostDto;
-import com.gendiary.dtos.TagDto;
-import com.gendiary.model.Post;
-import com.gendiary.model.Tag;
-
 import java.io.IOException;
 import java.util.List;
 

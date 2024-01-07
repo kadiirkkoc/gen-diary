@@ -25,4 +25,7 @@ public class MainLogger {
         logger.error(message);
         throw new GenDiaryServerException(message,httpStatus);
     }
+
+    public void error(String s) {
+    }
 }
