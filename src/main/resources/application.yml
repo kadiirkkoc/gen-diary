@@ -1,0 +1,38 @@
+ai-service:
+  process-url: "https://1f8c-31-223-46-249.ngrok-free.app/process_image"
+
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gen_diary
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: Kkoc0312
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: update
+  main:
+    allow-circular-references: true
+
+app:
+  root:
+    frontend: http://localhost:4200
+    backend: http://localhost:8082
+
+upload:
+  user:
+    images: uploads/user
+  post:
+    images: uploads/post
+  rendered:
+    images: uploads/rendered_images
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+
