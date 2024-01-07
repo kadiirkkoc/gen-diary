@@ -38,6 +38,9 @@ public class Post {
     @Column(name = "like_count")
     private Integer likeCount;
 
+    @Column(name = "post_owner_username")
+    private String postOwnerUsername;
+
     @Column(name = "country")
     private String country;
 

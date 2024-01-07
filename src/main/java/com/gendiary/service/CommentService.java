@@ -15,7 +15,7 @@ public interface CommentService {
     String deleteComment(Long id);
     Comment getCommentByUuid(Long id);
 
-    //Comment likeComment(Long id);
+    Comment likeComment(Long uuid);
 
-    //Comment unlikeComment(Long uuid);
+    Comment unlikeComment(Long uuid);
 }

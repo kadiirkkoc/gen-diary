@@ -16,7 +16,7 @@ public class PostDto {
 
     private String content;
     private MultipartFile image;
-    private MultipartFile renderedImage;
+    private String renderedImageUrl;
     private Integer likeCount;
     private Integer commentCount;
     private String likerUUIDS;
@@ -24,8 +24,8 @@ public class PostDto {
     private String postOwnerUUID;
     private List<Comment> postComments;
     private List<Tag> postTags;
-    private String authUserEmail;
     private String country;
+    private String postOwnerUsername;
 }
 
 

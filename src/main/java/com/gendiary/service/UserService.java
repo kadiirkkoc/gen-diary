@@ -16,9 +16,8 @@ public interface UserService {
     String updateUser(Long id,UserDto userDto);
     String deleteUser(Long id);
     AuthenticationResponse authenticate(AuthenticationRequest request);
-    //void followUser(Long Id);
-    //void unfollowUser(Long Id);
+    void followUser(Long Id);
+    void unfollowUser(Long Id);
     User getAuthenticatedUser();
-
     User getUserByEmail(String email);
 }

@@ -4,9 +4,8 @@ import com.gendiary.dtos.PostDto;
 import com.gendiary.loggers.MainLogger;
 import com.gendiary.loggers.messages.PostMessage;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 import com.gendiary.service.UserService;
 import com.gendiary.utils.FileNamingUtil;
 import com.gendiary.utils.FileUploadUtil;
@@ -21,17 +20,16 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 
-import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.*;
+
+import java.net.URL;
 
 import com.gendiary.model.Post;
 import com.gendiary.model.User;
 import com.gendiary.repository.PostRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -68,23 +66,21 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
         return postRepository.findAll().stream()
                 .map(post -> PostDto.builder()
                         .content(post.getContent())
-                        //.renderedImageUrl(post.getRenderedImageUrl())
+                        .renderedImageUrl(post.getRenderedImageUrl())
                         .likeCount(post.getLikeCount())
                         .commentCount(post.getCommentCount())
                         .dateCreated(post.getDateCreated())
                         .postOwnerUUID(post.getUser().getUuid())
                         .postComments(post.getPostComments())
                         .postTags(post.getPostTags())
-                        .build()).collect(Collectors.toList());
-
+                        .build())
+                .collect(Collectors.toList());
     }
-
-    @Override
     public PostDto getPostById(Long postId) {
         Optional<Post> post = postRepository.findById(postId);
         return post.map(x -> PostDto.builder()
                         .content(x.getContent())
-                        //.renderedImage(x.getRenderedImageUrl()  )
+                        .renderedImageUrl(x.getRenderedImageUrl())
                         .likeCount(x.getLikeCount())
                         .commentCount(x.getCommentCount())
                         .dateCreated(x.getDateCreated())
@@ -112,6 +108,8 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
         newPost.setUser(authUser);
         newPost.setLikeCount(0);
         postDto.setCountry(authUser.getCountry());
+        newPost.setPostOwnerUuid(authUser.getUuid());
+        newPost.setPostOwnerUsername(authUser.getUsername());
         if (authUser.getCountry() == null) {
             throw new IllegalStateException("Authenticated user does not have a country set.");
         }

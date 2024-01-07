@@ -23,7 +23,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GenDiaryExceptionHandler {
     private static final Logger LOGGER = LogManager.getLogger(GenDiaryExceptionHandler.class);
-
     private static final String SINGLE_QUOTE = "'";
     private static final String INTERNAL_ERROR = "Internal Error. Please contact support.";
 

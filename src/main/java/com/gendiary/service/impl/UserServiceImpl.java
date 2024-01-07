@@ -150,35 +150,35 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
-//    @Override
-//    public void followUser(Long id) {
-//        User authUser = getAuthenticatedUser(postDto.getAuthUserEmail());
-//        if (!authUser.getId().equals(id)) {
-//            Optional<User> userToFollow = userRepository.findById(id);
-//            authUser.getFollowingUsers().add(userToFollow.get());
-//            authUser.setFollowingCount(authUser.getFollowingCount() + 1);
-//            userToFollow.get().getFollowerUsers().add(authUser);
-//            userToFollow.get().setFollowerCount(userToFollow.get().getFollowerCount() + 1);
-//            userRepository.save(userToFollow.get());
-//            userRepository.save(authUser);
-//        } else {
-//            logger.log(UserMessage.NOT_FOUND + id,HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @Override
+    public void followUser(Long id) {
+        User authUser = getAuthenticatedUser();
+        if (!authUser.getId().equals(id)) {
+            Optional<User> userToFollow = userRepository.findById(id);
+            authUser.getFollowingUsers().add(userToFollow.get());
+            authUser.setFollowingCount(authUser.getFollowingCount() + 1);
+            userToFollow.get().getFollowerUsers().add(authUser);
+            userToFollow.get().setFollowerCount(userToFollow.get().getFollowerCount() + 1);
+            userRepository.save(userToFollow.get());
+            userRepository.save(authUser);
+        } else {
+            logger.log(UserMessage.NOT_FOUND + id,HttpStatus.BAD_REQUEST);
+        }
+    }
 
-//    @Override
-//    public void unfollowUser(Long id) {
-//        User authUser = getAuthenticatedUser(postDto.getAuthUserEmail());
-//        if (!authUser.getId().equals(id)) {
-//            Optional<User> userToUnfollow = userRepository.findById(id);
-//            authUser.getFollowingUsers().remove(userToUnfollow);
-//            authUser.setFollowingCount(authUser.getFollowingCount() - 1);
-//            userToUnfollow.get().getFollowerUsers().remove(authUser);
-//            userToUnfollow.get().setFollowerCount(userToUnfollow.get().getFollowerCount() - 1);
-//            userRepository.save(userToUnfollow.get());
-//            userRepository.save(authUser);
-//        } else {
-//            logger.log(UserMessage.NOT_FOUND + id,HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @Override
+    public void unfollowUser(Long id) {
+        User authUser = getAuthenticatedUser();
+        if (!authUser.getId().equals(id)) {
+            Optional<User> userToUnfollow = userRepository.findById(id);
+            authUser.getFollowingUsers().remove(userToUnfollow);
+            authUser.setFollowingCount(authUser.getFollowingCount() - 1);
+            userToUnfollow.get().getFollowerUsers().remove(authUser);
+            userToUnfollow.get().setFollowerCount(userToUnfollow.get().getFollowerCount() - 1);
+            userRepository.save(userToUnfollow.get());
+            userRepository.save(authUser);
+        } else {
+            logger.log(UserMessage.NOT_FOUND + id,HttpStatus.BAD_REQUEST);
+        }
+    }
 }
