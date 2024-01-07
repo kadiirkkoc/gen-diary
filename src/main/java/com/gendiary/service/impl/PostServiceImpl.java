@@ -30,6 +30,8 @@ import com.gendiary.model.User;
 import com.gendiary.repository.PostRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,18 +46,21 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
     private String aiServiceProcessUrl;
     private final PostRepository postRepository;
     private final UserService userService;
+    private final UserCredentialsServiceImpl userCredentialsService;
     private final RestTemplate restTemplate = new RestTemplate();
     private final MainLogger logger = new MainLogger(PostServiceImpl.class);
     private final Environment environment;
     private final FileNamingUtil fileNamingUtil;
     private final FileUploadUtil fileUploadUtil;
 
-    public PostServiceImpl(PostRepository postRepository, Environment environment, FileNamingUtil fileNamingUtil, FileUploadUtil fileUploadUtil, UserService userService) {
+    public PostServiceImpl(PostRepository postRepository, UserService userService, UserCredentialsServiceImpl userCredentialsService, Environment environment, FileNamingUtil fileNamingUtil, FileUploadUtil fileUploadUtil) {
+        this.aiServiceProcessUrl = aiServiceProcessUrl;
         this.postRepository = postRepository;
+        this.userService = userService;
+        this.userCredentialsService = userCredentialsService;
         this.environment = environment;
         this.fileNamingUtil = fileNamingUtil;
         this.fileUploadUtil = fileUploadUtil;
-        this.userService = userService;
     }
 
     @Override
@@ -96,15 +101,20 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
 
     @Override
     public String createPost(PostDto postDto) throws IOException {
-        User authUser = userService.getAuthenticatedUser(postDto.getAuthUserEmail());
-        if (authUser == null){
+
+        User authUser = userService.getAuthenticatedUser();
+        if (authUser == null) {
             System.out.println("user null");
         }
+
         Post newPost = new Post();
         newPost.setContent(postDto.getContent());
         newPost.setUser(authUser);
         newPost.setLikeCount(0);
-        newPost.setCountry(postDto.getCountry());
+        postDto.setCountry(authUser.getCountry());
+        if (authUser.getCountry() == null) {
+            throw new IllegalStateException("Authenticated user does not have a country set.");
+        }
         newPost.setPostComments(null);
         if (postDto.getImage() != null) {
             String processedImageUrl = processImageWithAIService(postDto);
@@ -117,6 +127,7 @@ public class PostServiceImpl implements com.gendiary.service.PostService {
         postRepository.save(newPost);
         return logger.log(PostMessage.CREATE + newPost.getUuid(), HttpStatus.OK);
     }
+
 
 
     private String processImageWithAIService(PostDto postDto) throws IOException {

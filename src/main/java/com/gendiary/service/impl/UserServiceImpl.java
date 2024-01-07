@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +28,16 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
+    private final UserCredentialsServiceImpl userCredentialsService;
     private final MainLogger logger = new MainLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, UserCredentialsServiceImpl userCredentialsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.userCredentialsService = userCredentialsService;
     }
 
     @Override
@@ -139,11 +142,10 @@ public class UserServiceImpl implements UserService {
         return UserMessage.DELETE + id;
     }
 
-    public final User getAuthenticatedUser(String authUserEmail) {
-//        String authUserEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        return getUserByEmail(authUserEmail);
+    public final User getAuthenticatedUser() {
+        UserDetails output =  userCredentialsService.getActiveUser();
+        return getUserByEmail(output.getUsername());
     }
-
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }

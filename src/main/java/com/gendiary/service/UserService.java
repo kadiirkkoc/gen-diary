@@ -18,5 +18,7 @@ public interface UserService {
     AuthenticationResponse authenticate(AuthenticationRequest request);
     //void followUser(Long Id);
     //void unfollowUser(Long Id);
-    User getAuthenticatedUser(String authUserEmail);
+    User getAuthenticatedUser();
+
+    User getUserByEmail(String email);
 }

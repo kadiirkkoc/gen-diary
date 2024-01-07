@@ -2,15 +2,15 @@ package com.gendiary.dtos;
 
 import com.gendiary.model.Comment;
 import com.gendiary.model.Tag;
+import com.gendiary.service.UserService;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.List;
-
 @Data
-@Builder
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 public class PostDto {
 
@@ -26,7 +26,6 @@ public class PostDto {
     private List<Tag> postTags;
     private String authUserEmail;
     private String country;
-
 }
 
 
