@@ -34,7 +34,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PostServiceImpl implements com.gendiary.service.PostService {
